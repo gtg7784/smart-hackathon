@@ -1,41 +1,26 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
- 
-const char* ssid = "avocado";
-const char* password = "avocadoistasteless";
- 
-void setup () {
- 
-Serial.begin(115200);
-WiFi.begin(ssid, password);
- 
-while (WiFi.status() != WL_CONNECTED) {
- 
-delay(1000);
-Serial.print("Connecting..");
- 
-}
- 
-}
- 
-void loop() {
- 
-if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
- 
-HTTPClient http;  //Declare an object of class HTTPClient
- 
-http.begin("http://35.194.96.202/?id=true");  //Specify request destination
-int httpCode = http.GET(); //Send the request
- 
-if (httpCode > 0) { //Check the returning code
-  String payload = http.getString();   //Get the request response payload
-  Serial.println(payload);                     //Print the response payload
-}
- 
-http.end();   //Close connection
-}
- 
-delay(30000);    //Send a request every 30 seconds
- 
+
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(2, 3); //블루투스의 Tx, Rx핀을 2번 3번핀으로 설정
+
+char connection[] = 'o';
+void setup() {
+  // 시리얼 통신의 속도를 9600으로 설정
+  Serial.begin(9600);
+  while (!Serial) {
+    ; //시리얼통신이 연결되지 않았다면 코드 실행을 멈추고 무한 반복
+  }
+  
+  Serial.println("Hello World!");
+
+  //블루투스와 아두이노의 통신속도를 9600으로 설정
+  mySerial.begin(9600);
 }
 
+void loop() { //코드를 무한반복합니다.
+  if (Serial.available()) {    //시리얼모니터에 입력된 데이터가 있다면
+    mySerial.write(connection);  //블루투스를 통해 입력된 데이터 전달
+    connection = connection == "o" ? "n" : "o";
+    delay(300000);
+  }
+}
