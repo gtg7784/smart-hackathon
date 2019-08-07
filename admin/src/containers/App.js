@@ -20,7 +20,7 @@ import './App.scss';
 
 class App extends React.Component{
   state = {
-    electric: true,
+    electric: false,
     route: [
       {
         index: '대시보드',

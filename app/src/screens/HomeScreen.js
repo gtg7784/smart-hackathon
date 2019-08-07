@@ -9,11 +9,10 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ImageBackground,
-  StatusBar
+  Alert
 } from "react-native";
 
 import Swiper from 'react-native-swiper';
-import NfcManager from 'react-native-nfc-manager';
 
 import {
   IMAGE_LOGO,
@@ -39,7 +38,6 @@ class HomeScreen extends React.Component {
   }
 
   state = {
-    index: 0,
     id: '',
     pw: ''
   }
@@ -55,44 +53,6 @@ class HomeScreen extends React.Component {
       shadowColor: "transparent"
     }
   });
-
-  async componentDidMount() {
-    const { index } = this.state;
-    
-    const checkindex = async () => await (
-      index === 3 ? true : false
-    )
-    
-    if (checkindex) {
-      await NfcManager.isSupported(NfcTech.MifareClassic)
-      .then(() => console.log('Mifare classic is supported'))
-      .catch(err => console.warn(err))
-      
-      await NfcManager.start({
-        onSessionClosedIOS: () => {
-            console.log('ios session closed');
-        }
-      }).then(result => {
-            console.log('start OK', result);
-        })
-        .catch(error => {
-            console.warn('device does not support nfc!');
-            this.setState({supported: false});
-        })
-    }
-    await NfcManager.registerTagEvent(
-      tag => {
-        console.log('Tag Discovered', tag);
-      },
-      'Hold your device over the tag',
-      {
-        invalidateAfterFirstRead: true,
-        isReaderModeEnabled: true,
-        readerModeFlags:
-          NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-      },
-    );
-  }
 
   render() {
     const { index, id, pw } = this.state;
@@ -141,12 +101,9 @@ class HomeScreen extends React.Component {
                 backgroundColor: COLOR_PURPLE,
                 marginTop: 160,
                 borderRadius: 20,
-              }}
-              onPress={() => this.setState({
-              index: 1
-            })}>
+              }}>
               <Text style={{
-                fontSize: 14,
+                fontSize: 18,
                 letterSpacing: -.22,
                 color: COLOR_WHITE
               }}>시작하기</Text>
@@ -263,9 +220,40 @@ class HomeScreen extends React.Component {
               NFC리더기에{'\n'}
               휴대폰을 태그하세요
             </Text>
-            <Image source={IMAGE_NFC} style={{
+            <TouchableWithoutFeedback onPress={() => Alert.alert(
+                "출석 완료!",
+                "출석이 완료되었습니다.",
+                [{ text: "확인" }]
+              )} style={{
+              backgroundColor: 'transparent',
+              borderColor: 'transparent',
               marginTop: 85
-            }}/>
+              }} >
+                <Image source={IMAGE_NFC} style={{
+                  marginTop: 85
+                }} />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => Alert.alert(
+                "출석 실패!",
+                "아이디나 비밀번호가 잘못되었습니다.",
+                [{ text: "확인" }]
+              )} style={{
+              width: width,
+              height: height/2,
+              backgroundColor: 'transparent',
+              borderColor: 'transparent',
+              position: 'absolute',
+              top: 0,
+              }} >
+              <View style={{
+              width: width,
+              height: height/2,
+              backgroundColor: 'transparent',
+              borderColor: 'transparent',
+              position: 'absolute',
+              top: 0,
+              }} />
+            </TouchableWithoutFeedback>
           </View>
         </Swiper>
       </View>

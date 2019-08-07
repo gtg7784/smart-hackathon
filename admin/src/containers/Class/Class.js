@@ -1,9 +1,10 @@
 import React from 'react'
+import './Class.scss'
 
 class Class extends React.Component{
   render() {
     return (
-      <div>
+      <div classNam="Class">
         class
       </div>
     )
